@@ -1,0 +1,29 @@
+### Program 2: Reading a Hidden Message from a BMP Image
+
+##This program will read back the hidden message from `D:\test_image_step1.bmp`.
+
+##```python
+# Step 1: Define the function to read the hidden message
+def read_message_from_bmp(image_path):
+    # Step 2: Open the BMP file in binary read mode
+    with open(image_path, "rb") as bmp_file:
+        bmp_data = bytearray(bmp_file.read())  # Read entire BMP file into a bytearray
+            # Step 3: Extracting message from least significant bits
+    message_bytes = []
+    
+    for i in range(54, len(bmp_data)):  # Start reading after header (54 bytes)
+        message_bytes.append(bmp_data[i] & 1)  # Get least significant bit
+
+        if len(message_bytes) >= 8 and message_bytes[-8:] == [0]*8:  # Check for null termination
+            break
+    # Step 4: Convert bits back to bytes and then decode to string
+    hidden_message = ''.join(chr(int(''.join(map(str, message_bytes[i:i+8])), 2)) for i in range(0, len(message_bytes)-8, 8))
+    
+    return hidden_message
+
+# Step 5: Main execution
+if __name__ == "__main__":
+    input_image_path = r"D:\test_image_step1.bmp"  # Path to the modified BMP image with hidden message
+
+    secret_message = read_message_from_bmp(input_image_path)  # Read hidden message
+    print("Hidden Message:", secret_message)  # Output the hidden message
